@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { apiService } from "../services/api";
 
 const BrainIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M12 5a3 3 0 1 0-5.993 1.002h.001a4 4 0 0 0-3.38 5.42A6 6 0 0 0 12 18a6 6 0 0 0 5.373-3.578A4 4 0 0 0 18.998 9a3 3 0 1 0-6.995-4.002h-.001Z"/><path d="M12 18a6 6 0 0 1-5.373-3.578m10.746 0A6 6 0 0 0 12 18"/><path d="M12 5.002a3 3 0 0 1 5.993 1H12v6h6"/><path d="M6.007 6.002A3 3 0 0 0 12 5.002V11H6.002Z"/></svg>
@@ -81,15 +80,24 @@ const MentalWellness = () => {
     setError(null);
 
     try {
-        const result = await apiService.chatWithText(currentInput);
-        
-        setMessages(prev => [...prev, { sender: 'bot', text: result.reply }]);
+      const response = await fetch('http://localhost:8000/chat/text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: currentInput }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get a response from the assistant.');
+      }
+
+      const result = await response.json();
+      setMessages(prev => [...prev, { sender: 'bot', text: result.reply }]);
 
     } catch (err: any) {
-        setError("Could not connect to the chat service. Please make sure it's running and try again.");
-        setMessages(prev => [...prev, { sender: 'bot', text: "I'm having a little trouble right now. Please try again later." }]);
+      setError("Could not connect to the chat service. Please make sure it's running and try again.");
+      setMessages(prev => [...prev, { sender: 'bot', text: "I'm having a little trouble right now. Please try again later." }]);
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -219,7 +227,7 @@ const MentalWellness = () => {
 
       {/* Placeholder for Footer */}
       <footer className="py-4 text-center text-sm text-gray-500 border-t bg-white">
-        &copy; 2025 SheCares Inc. All rights reserved.
+        &copy; 2024 Wellness Inc. All rights reserved.
       </footer>
     </div>
   );

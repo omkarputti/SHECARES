@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = 'http://localhost:8000';
 
 export interface DueDateRequest {
   lmp_date: string;
@@ -28,21 +28,6 @@ export interface ChatbotRequest {
 export const apiService = {
   async calculateDueDate(data: DueDateRequest) {
     const response = await fetch(`${API_BASE_URL}/calculate-due-date`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.detail || 'An unknown API error occurred.');
-  }
-
-  return response.json();
-},
-
-  async predictPeriodSimple(data: SimplePeriodRequest) {
-    const response = await fetch(`${API_BASE_URL}/predict-period/simple`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,20 +37,14 @@ export const apiService = {
     return response.json();
   },
 
-  async chatWithText(message: string) {
-    const formData = new FormData();
-    formData.append('message', message);
-
-    const response = await fetch(`${API_BASE_URL}/chat/text`, {
+  async predictPeriodSimple(data: SimplePeriodRequest) {
+    const response = await fetch(`${API_BASE_URL}/predict-period/simple`, {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || 'An API error occurred.');
-    }
-
     return response.json();
   },
 

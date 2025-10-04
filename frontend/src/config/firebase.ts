@@ -1,15 +1,21 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
+// Your Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "shecares-a6575.firebaseapp.com",
-  projectId: "shecares-a6575",
-  storageBucket: "shecares-a6575.firebasestorage.app",
-  messagingSenderId: "47603653504",
-  appId: "1:47603653504:web:7378a54fd969d06258bf65"
+  apiKey: "AIzaSyDIbRq-e-nPYD16lO_WuY3SCOnH_mjO_dg",
+  authDomain: "shecares-2c973.firebaseapp.com",
+  projectId: "shecares-2c973",
+  storageBucket: "shecares-2c973.firebasestorage.app",
+  messagingSenderId: "390312224528",
+  appId: "1:390312224528:web:ec6c0dbf298b19dc802795",
+  measurementId: "G-ZZ46RQJV73",
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase Authentication
 export const auth = getAuth(app);
+
 export default app;

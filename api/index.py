@@ -43,11 +43,16 @@ app.add_middleware(
 
 # --- Health AI Model Loading ---
 try:
-    # Note: Ensure 'period_predictor_model.pkl' is in the same directory or provide the correct path.
-    period_model_pipeline = joblib.load("period_predictor_model.pkl")
+    # Path is relative to the project root, where Vercel runs the function.
+    model_path = os.path.join(os.path.dirname(__file__), "period_predictor_model.pkl")
+    period_model_pipeline = joblib.load(model_path)
 except FileNotFoundError:
-    print("Warning: period_predictor_model.pkl not found. Advanced prediction endpoints will fail.")
-    period_model_pipeline = None
+    # Fallback for environments where the CWD is the project root
+    try:
+        period_model_pipeline = joblib.load("api/period_predictor_model.pkl")
+    except FileNotFoundError:
+        print("Warning: period_predictor_model.pkl not found. Advanced prediction endpoints will fail.")
+        period_model_pipeline = None
 
 # --- Gemini AI Configuration ---
 api_key = os.getenv("GEMINI_API_KEY")

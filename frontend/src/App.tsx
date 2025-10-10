@@ -1,43 +1,40 @@
-import { Suspense, lazy } from "react";
-import { Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { RequireAuth } from "./components/RequireAuth";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
+import Pregnancy from "./pages/Pregnancy";
+import Periods from "./pages/Periods";
+import MentalHealth from "./pages/MentalHealth";
+import Caretaker from "./pages/Caretaker";
+import Wearable from "./pages/Wearable";
+import FoodAnalyzer from "./pages/FoodAnalyzer";
+import NotFound from "./pages/NotFound";
 
-// ✅ Lazy-loaded pages
-const Index = lazy(() => import("./pages/Index"));
-const Auth = lazy(() => import("./pages/Auth"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const PregnancyCare = lazy(() => import("./pages/PregnancyCare"));
-const PeriodTracking = lazy(() => import("./pages/PeriodTracking"));
-const MentalWellness = lazy(() => import("./pages/MentalWellness"));
-const Report = lazy(() => import("./pages/Report"));
-const TherapistSupport = lazy(() => import("./pages/TherapistSupport"));
-const BookingPage = lazy(() => import("./pages/BookingPage"));
-const FindProfessional = lazy(() => import("./pages/FindProfessional"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+const queryClient = new QueryClient();
 
 const App = () => (
-  <>
-    <Toaster />
-    <Sonner />
-    {/* Suspense ensures lazy pages show a fallback while loading */}
-    <Suspense fallback={<div className="flex justify-center items-center h-screen text-lg text-gray-500">Loading...</div>}>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-        <Route path="/pregnancy-care" element={<RequireAuth><PregnancyCare /></RequireAuth>} />
-        <Route path="/period-tracking" element={<RequireAuth><PeriodTracking /></RequireAuth>} />
-        <Route path="/mental-wellness" element={<RequireAuth><MentalWellness /></RequireAuth>} />
-        <Route path="/report" element={<RequireAuth><Report /></RequireAuth>} />
-        <Route path="/therapist-support" element={<RequireAuth><TherapistSupport /></RequireAuth>} />
-        <Route path="/booking" element={<RequireAuth><BookingPage /></RequireAuth>} />
-        <Route path="/find/:type" element={<RequireAuth><FindProfessional /></RequireAuth>} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
-  </>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/pregnancy" element={<Pregnancy />} />
+          <Route path="/periods" element={<Periods />} />
+          <Route path="/mental-health" element={<MentalHealth />} />
+          <Route path="/caretaker" element={<Caretaker />} />
+          <Route path="/wearable" element={<Wearable />} />
+          <Route path="/food-analyzer" element={<FoodAnalyzer />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;

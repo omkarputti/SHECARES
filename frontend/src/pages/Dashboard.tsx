@@ -1,156 +1,148 @@
-import { useEffect, useState } from "react";
-import { auth } from "@/config/firebase";
-import { signOut, onAuthStateChanged, User } from "firebase/auth";
-import { Button } from "@/components/ui/button";
+import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Calendar, Heart, Activity, Users, Apple, Watch } from "lucide-react";
 import { Link } from "react-router-dom";
-import SOSModal from "@/components/SOSModal";
 
 const Dashboard = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const [isSOSModalOpen, setIsSOSModalOpen] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        navigate("/auth");
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      toast({ title: "Logged out", description: "See you soon!" });
-      navigate("/");
-    } catch (error: any) {
-      toast({ 
-        title: "Logout failed", 
-        description: error.message,
-        variant: "destructive" 
-      });
-    }
-  };
-
-  const handleSOSClick = () => {
-    setIsSOSModalOpen(true);
-  };
-
-  const handleCloseSOSModal = () => {
-    setIsSOSModalOpen(false);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <span className="text-primary-foreground font-bold text-xl">❤️</span>
-          </div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-subtle p-4">
-      {isSOSModalOpen && (
-        <SOSModal isOpen={isSOSModalOpen} onClose={handleCloseSOSModal} />
-      )}
-      <div className="container mx-auto max-w-4xl">
-        <header className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-3">
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                SheCares Dashboard
-              </h1>
-              <p className="text-muted-foreground">Welcome back, {user.displayName || 'User'}</p>
-            </div>
-          </div>
-          <Button variant="outline" onClick={handleLogout}>
-            Logout
-          </Button>
-        </header>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-primary mb-2">Welcome Back!</h1>
+          <p className="text-muted-foreground">Here's your health overview</p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="hover:shadow-elegant transition-shadow cursor-pointer md:col-span-2 lg:col-span-3">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <span>🆘</span>
-                <span>Emergency SOS</span>
-              </CardTitle>
-              <CardDescription>Immediately alert your emergency contacts and share your live location.</CardDescription>
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Next Period</CardTitle>
+              <Calendar className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
-              <Button variant="destructive" className="w-full" onClick={handleSOSClick}>
-                Activate SOS
-              </Button>
+              <div className="text-2xl font-bold">5 days</div>
+              <p className="text-xs text-muted-foreground">Based on your cycle</p>
             </CardContent>
           </Card>
 
-          <Link to="/pregnancy-care">
-            <Card className="hover:shadow-elegant transition-shadow cursor-pointer">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <span>👶</span>
-                  <span>Pregnancy</span>
-                </CardTitle>
-                <CardDescription>Due date calculator, tips, and PregBot</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Track your pregnancy journey with personalized guidance
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Mental Health</CardTitle>
+              <Heart className="h-4 w-4 text-accent" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">Good</div>
+              <p className="text-xs text-muted-foreground">Last check-in today</p>
+            </CardContent>
+          </Card>
 
-          <Link to= "/period-tracking">
-            <Card className="hover:shadow-elegant transition-shadow cursor-pointer">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <span>🩸</span>
-                  <span>Periods</span>
-                </CardTitle>
-                <CardDescription>Cycle tracking and mood support</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Predict cycles, get tips, and connect with doctors
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Activity</CardTitle>
+              <Activity className="h-4 w-4 text-accent" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">7,582</div>
+              <p className="text-xs text-muted-foreground">Steps today</p>
+            </CardContent>
+          </Card>
 
-          <Link to= "/mental-wellness">
-            <Card className="hover:shadow-elegant transition-shadow cursor-pointer">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <span>🧠</span>
-                  <span>Mental Health</span>
-                </CardTitle>
-                <CardDescription>Smart routing and therapist support</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Get personalized mental health guidance and support
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Caretakers</CardTitle>
+              <Users className="h-4 w-4 text-accent" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">3</div>
+              <p className="text-xs text-muted-foreground">Connected</p>
+            </CardContent>
+          </Card>
         </div>
-      </div>
+
+        {/* Quick Access */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Calendar className="h-8 w-8 text-accent mb-2" />
+              <CardTitle>Period Tracking</CardTitle>
+              <CardDescription>Track your cycle and get predictions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/periods">
+                <Button className="w-full">View Cycle</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Heart className="h-8 w-8 text-accent mb-2" />
+              <CardTitle>Pregnancy Care</CardTitle>
+              <CardDescription>Due date calculator and trimester tips</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/pregnancy">
+                <Button className="w-full">View Details</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Activity className="h-8 w-8 text-accent mb-2" />
+              <CardTitle>Mental Health</CardTitle>
+              <CardDescription>Get support and connect with therapists</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/mental-health">
+                <Button className="w-full">Check In</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Users className="h-8 w-8 text-accent mb-2" />
+              <CardTitle>Caretaker Module</CardTitle>
+              <CardDescription>Manage your support network</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/caretaker">
+                <Button className="w-full">Manage</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Watch className="h-8 w-8 text-accent mb-2" />
+              <CardTitle>Wearable Connect</CardTitle>
+              <CardDescription>Sync your fitness devices</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/wearable">
+                <Button className="w-full">Connect Device</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Apple className="h-8 w-8 text-accent mb-2" />
+              <CardTitle>Food Analyzer</CardTitle>
+              <CardDescription>Track nutrition and get recommendations</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/food-analyzer">
+                <Button className="w-full">Analyze Food</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
     </div>
   );
 };

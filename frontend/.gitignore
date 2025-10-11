@@ -1,6 +1,4 @@
-# Environment variables - DO NOT COMMIT!
-.env
-.env*.local
+
 
 # Dependencies and build output
 node_modules

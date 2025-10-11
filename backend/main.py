@@ -15,7 +15,7 @@ load_dotenv()
 
 # --- FastAPI App Initialization ---
 app = FastAPI(
-    title="SheCares AI API",
+    title="Vespera AI API",
     description="An integrated API for cycle prediction, pregnancy tools, and AI-powered health assistance.",
     version="3.2.0"
 )
@@ -23,7 +23,7 @@ app = FastAPI(
 # --- CORS Configuration ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173, http://localhost:8080, http://localhost:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

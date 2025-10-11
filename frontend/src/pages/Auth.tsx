@@ -64,7 +64,7 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl bg-gradient-primary bg-clip-text text-transparent">
-            SheCares
+            Vespera
           </CardTitle>
           <CardDescription>
             Your trusted companion for women's health

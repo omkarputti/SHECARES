@@ -5,7 +5,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <span className="font-bold text-xl">SheCares</span>
+              <span className="font-bold text-xl">Vespera</span>
             </div>
             <p className="text-primary-foreground/80 text-sm leading-relaxed">
               Your complete women's health companion for pregnancy, periods, mental wellness, and emergency safety.
@@ -49,7 +49,7 @@ const Footer = () => {
         
         <div className="border-t border-primary-foreground/20 pt-8 mt-8 text-center">
           <p className="text-sm text-primary-foreground/60">
-            © 2025 SheCares. All rights reserved. Team Oscorp
+            © 2025 Vespera. All rights reserved. Team Oscorp
           </p>
         </div>
       </div>

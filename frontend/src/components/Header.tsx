@@ -17,15 +17,19 @@ const Header = () => {
     }
   };
 
+  // ✅ Change the site name here
+  const siteName = "Vespera";
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
-          <span className="font-bold text-xl bg-gradient-primary bg-clip-text text-transparent">
-            SheCares
+          {/* ✅ Visible and gradient-safe site name */}
+          <span className="font-bold text-2xl bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-sm">
+            {siteName}
           </span>
         </Link>
-        
+
         <div className="hidden md:flex items-center space-x-6">
           <Link to={user ? "/pregnancy-care" : "/auth"} className="text-muted-foreground hover:text-primary transition-colors">
             Pregnancy
@@ -40,7 +44,7 @@ const Header = () => {
             Therapists
           </Link>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           {loading ? (
             <div className="h-10 w-44 animate-pulse bg-muted rounded-md"></div>
@@ -49,7 +53,7 @@ const Header = () => {
               <Button variant="ghost" className="text-muted-foreground hover:text-primary" asChild>
                 <Link to="/dashboard">Dashboard</Link>
               </Button>
-              <Button onClick={handleLogout} className="bg-gradient-primary hover:opacity-90 shadow-glow">
+              <Button onClick={handleLogout} className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 shadow-md">
                 Logout
               </Button>
             </>
@@ -58,7 +62,7 @@ const Header = () => {
               <Button variant="ghost" className="text-muted-foreground hover:text-primary" asChild>
                 <Link to="/auth">Log In</Link>
               </Button>
-              <Button className="bg-gradient-primary hover:opacity-90 shadow-glow" asChild>
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 shadow-md" asChild>
                 <Link to="/auth">Get Started</Link>
               </Button>
             </>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, Utensils, Loader2, CheckCircle, AlertTriangle, Info } from "lucide-react";
+import { Calendar, Utensils, Loader2, CheckCircle, AlertTriangle, XCircle, Info, Shield, Ban, Camera } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/config/firebase';
@@ -16,6 +16,12 @@ import Footer from "@/components/Footer";
 
 interface DueDateResult {
   estimated_due_date: string;
+}
+
+interface FoodAnalysisResult {
+  analysis_text: string;
+  safety_status: 'safe' | 'unsafe' | 'caution' | 'not_food' | 'unknown';
+  detected_food?: boolean;
 }
 
 const PregnancyCare = () => {
@@ -28,7 +34,7 @@ const PregnancyCare = () => {
   const [dueDateError, setDueDateError] = useState<string | null>(null);
 
   const [foodImage, setFoodImage] = useState<File | null>(null);
-  const [foodAnalysisText, setFoodAnalysisText] = useState<string | null>(null);
+  const [foodAnalysisResult, setFoodAnalysisResult] = useState<FoodAnalysisResult | null>(null);
   const [foodLoading, setFoodLoading] = useState(false);
   const [foodError, setFoodError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -70,7 +76,7 @@ const PregnancyCare = () => {
 
     setFoodLoading(true);
     setFoodError(null);
-    setFoodAnalysisText(null);
+    setFoodAnalysisResult(null);
 
     const formData = new FormData();
     formData.append('file', foodImage);
@@ -86,11 +92,113 @@ const PregnancyCare = () => {
       }
 
       const result = await response.json();
-      setFoodAnalysisText(result.analysis_text);
+      const analysisText = result.analysis_text.toLowerCase();
+      
+      // IMPROVED SAFETY DETECTION LOGIC
+      let safetyStatus: 'safe' | 'unsafe' | 'caution' | 'not_food' | 'unknown' = 'unknown';
+      let detectedFood = true;
+
+      // First check if it's NOT food
+      const notFoodIndicators = [
+        'not food', 'not a food', 'cannot identify', 'no food', "doesn't contain food",
+        'logo', 'document', 'text', 'paper', 'screen', 'phone', 'computer', 'electronic',
+        'object', 'item', 'thing', 'brand', 'company', 'organization', 'university',
+        'developer group', 'gdg', 'google developer', 'vtu', 'visvesvaraya'
+      ];
+
+      const isNotFood = notFoodIndicators.some(indicator => analysisText.includes(indicator));
+      
+      if (isNotFood) {
+        safetyStatus = 'not_food';
+        detectedFood = false;
+      } 
+      // Then check safety levels for actual food
+      else if (analysisText.includes('unsafe') || analysisText.includes('dangerous') || 
+               analysisText.includes('avoid') || analysisText.includes('harmful') ||
+               analysisText.includes('toxic') || analysisText.includes('risk') && 
+               analysisText.includes('high risk')) {
+        safetyStatus = 'unsafe';
+      } else if (analysisText.includes('safe') && !analysisText.includes('not safe') && 
+                 !analysisText.includes('unsafe')) {
+        safetyStatus = 'safe';
+      } else if (analysisText.includes('caution') || analysisText.includes('moderation') || 
+                 analysisText.includes('limit') || analysisText.includes('consult')) {
+        safetyStatus = 'caution';
+      } else {
+        safetyStatus = 'unknown';
+      }
+
+      setFoodAnalysisResult({
+        analysis_text: result.analysis_text,
+        safety_status: safetyStatus,
+        detected_food: detectedFood
+      });
     } catch (err: any) {
       setFoodError(err.message);
     } finally {
       setFoodLoading(false);
+    }
+  };
+
+  // Get safety status styling based on status
+  const getSafetyStyles = (status: string) => {
+    switch (status) {
+      case 'safe':
+        return {
+          background: 'from-green-50 to-green-25',
+          border: 'border-green-200',
+          icon: CheckCircle,
+          iconColor: 'text-green-600',
+          titleColor: 'text-green-700',
+          badge: 'bg-green-100 text-green-800 border-green-200',
+          badgeText: 'Safe to Eat',
+          description: 'This food appears to be generally safe for pregnancy. Always ensure proper preparation and consult your healthcare provider for personalized advice.'
+        };
+      case 'unsafe':
+        return {
+          background: 'from-red-50 to-red-25',
+          border: 'border-red-200',
+          icon: XCircle,
+          iconColor: 'text-red-600',
+          titleColor: 'text-red-700',
+          badge: 'bg-red-100 text-red-800 border-red-200',
+          badgeText: 'Not Safe - Avoid',
+          description: 'This food may pose risks during pregnancy. Avoid consumption and consult your healthcare provider for safe alternatives.'
+        };
+      case 'not_food':
+        return {
+          background: 'from-orange-50 to-orange-25',
+          border: 'border-orange-200',
+          icon: Ban,
+          iconColor: 'text-orange-600',
+          titleColor: 'text-orange-700',
+          badge: 'bg-orange-100 text-orange-800 border-orange-200',
+          badgeText: 'Not a Food Item',
+          description: 'The uploaded image does not contain recognizable food. Please upload a clear image of actual food items for safety analysis.'
+        };
+      case 'caution':
+        return {
+          background: 'from-amber-50 to-amber-25',
+          border: 'border-amber-200',
+          icon: AlertTriangle,
+          iconColor: 'text-amber-600',
+          titleColor: 'text-amber-700',
+          badge: 'bg-amber-100 text-amber-800 border-amber-200',
+          badgeText: 'Use Caution',
+          description: 'This food requires careful consideration. Consume in moderation and ensure proper preparation methods.'
+        };
+      case 'unknown':
+      default:
+        return {
+          background: 'from-gray-50 to-gray-25',
+          border: 'border-gray-200',
+          icon: Info,
+          iconColor: 'text-gray-600',
+          titleColor: 'text-gray-700',
+          badge: 'bg-gray-100 text-gray-800 border-gray-200',
+          badgeText: 'Analysis Needed',
+          description: 'Unable to determine safety status. Please consult your healthcare provider for guidance.'
+        };
     }
   };
 
@@ -105,6 +213,55 @@ const PregnancyCare = () => {
     li: ({node, ...props}: any) => <li className="text-sm text-gray-700 mb-1" {...props} />,
     strong: ({node, ...props}: any) => <strong className="font-semibold text-gray-900" {...props} />,
     em: ({node, ...props}: any) => <em className="italic text-gray-800" {...props} />,
+  };
+
+  // Enhanced analysis display with categorized sections
+  const renderEnhancedAnalysis = (analysisText: string, safetyStatus: string) => {
+    const styles = getSafetyStyles(safetyStatus);
+    const IconComponent = styles.icon;
+
+    return (
+      <div className={`bg-gradient-to-br ${styles.background} rounded-2xl p-5 border ${styles.border} shadow-md hover:shadow-lg transition-all duration-300 animate-fade-in`}>
+        {/* Header with safety status */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <IconComponent className={`h-6 w-6 ${styles.iconColor}`} />
+            <h3 className={`text-lg font-semibold ${styles.titleColor}`}>
+              {safetyStatus === 'not_food' ? 'Image Analysis Result' : 'Food Analysis Result'}
+            </h3>
+          </div>
+          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${styles.badge}`}>
+            {styles.badgeText}
+          </span>
+        </div>
+
+        {/* Analysis Content */}
+        <div className="prose prose-sm max-w-none text-gray-800 mb-4">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={MarkdownComponents}
+          >
+            {analysisText}
+          </ReactMarkdown>
+        </div>
+
+        {/* Additional Safety Notes */}
+        <div className="mt-4 p-3 rounded-lg bg-white border border-gray-200">
+          <div className="flex items-start gap-2">
+            <Shield className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+            <div className="text-xs text-gray-600">
+              <p>{styles.description}</p>
+              {safetyStatus === 'not_food' && (
+                <div className="mt-2 flex items-center gap-2 text-orange-600">
+                  <Camera className="h-3 w-3" />
+                  <span className="font-medium">Tip: Upload clear photos of actual food items</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -181,7 +338,7 @@ const PregnancyCare = () => {
                   Food Analyzer
                 </CardTitle>
                 <CardDescription>
-                  Upload a food image to get pregnancy-safe analysis and nutritional insights.
+                  Upload a clear image of food items for pregnancy-safe analysis and nutritional insights.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -214,6 +371,10 @@ const PregnancyCare = () => {
                         </Button>
                       )}
                     </div>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Camera className="h-3 w-3" />
+                      Upload clear photos of actual food items (not logos, documents, or objects)
+                    </p>
                   </div>
                   
                   <Button 
@@ -227,25 +388,14 @@ const PregnancyCare = () => {
 
                   {foodError && (
                     <Alert variant="destructive">
+                      <AlertTriangle className="h-4 w-4" />
                       <AlertDescription>{foodError}</AlertDescription>
                     </Alert>
                   )}
 
-                  {foodAnalysisText && (
-                    <div className="bg-gradient-to-br from-green-50 to-white rounded-2xl p-5 border border-green-200 shadow-md hover:shadow-lg transition-all duration-300 animate-fade-in">
-                      <div className="flex items-center gap-2 mb-4 text-green-700">
-                        <CheckCircle className="h-5 w-5" />
-                        <h3 className="text-lg font-semibold">Food Analysis Result</h3>
-                      </div>
-                      <div className="prose prose-sm max-w-none text-gray-800">
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          components={MarkdownComponents}
-                        >
-                          {foodAnalysisText}
-                        </ReactMarkdown>
-                      </div>
-                    </div>
+                  {foodAnalysisResult && renderEnhancedAnalysis(
+                    foodAnalysisResult.analysis_text, 
+                    foodAnalysisResult.safety_status
                   )}
                 </div>
               </CardContent>
@@ -253,7 +403,7 @@ const PregnancyCare = () => {
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer/>
     </div>
   );
 };

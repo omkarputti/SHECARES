@@ -1,4 +1,9 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// src/services/api.ts
+
+// Dynamically detect backend base URL from device or use .env if provided
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  `${window.location.protocol}//${window.location.hostname}:8000`;
 
 export interface DueDateRequest {
   lmp_date: string;
@@ -26,32 +31,71 @@ export interface ChatbotRequest {
 }
 
 export const apiService = {
+  // ✅ Calculate pregnancy due date
   async calculateDueDate(data: DueDateRequest) {
     const response = await fetch(`${API_BASE_URL}/calculate-due-date`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.detail || 'An unknown API error occurred.');
-  }
-
-  return response.json();
-},
-
-  async predictPeriodSimple(data: SimplePeriodRequest) {
-    const response = await fetch(`${API_BASE_URL}/predict-period/simple`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Failed to calculate due date.');
+    }
+
     return response.json();
   },
 
+  // ✅ Predict period (simple)
+  async predictPeriodSimple(data: SimplePeriodRequest) {
+    const response = await fetch(`${API_BASE_URL}/predict-period/simple`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) throw new Error('Failed to predict simple period.');
+    return response.json();
+  },
+
+  // ✅ Predict period (advanced)
+  async predictPeriodAdvanced(data: AdvancedPeriodRequest) {
+    const response = await fetch(`${API_BASE_URL}/predict-period/advanced`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) throw new Error('Failed to predict advanced period.');
+    return response.json();
+  },
+
+  // ✅ Predict ovulation (simple)
+  async predictOvulationSimple(data: SimplePeriodRequest) {
+    const response = await fetch(`${API_BASE_URL}/predict-ovulation/simple`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) throw new Error('Failed to predict simple ovulation.');
+    return response.json();
+  },
+
+  // ✅ Predict ovulation (advanced)
+  async predictOvulationAdvanced(data: AdvancedPeriodRequest) {
+    const response = await fetch(`${API_BASE_URL}/predict-ovulation/advanced`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) throw new Error('Failed to predict advanced ovulation.');
+    return response.json();
+  },
+
+  // ✅ Text-based chatbot (used by MentalWellness)
   async chatWithText(message: string) {
     const formData = new FormData();
     formData.append('message', message);
@@ -62,54 +106,22 @@ export const apiService = {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || 'An API error occurred.');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Failed to connect to chatbot.');
     }
 
     return response.json();
   },
 
-  async predictPeriodAdvanced(data: AdvancedPeriodRequest) {
-    const response = await fetch(`${API_BASE_URL}/predict-period/advanced`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    return response.json();
-  },
-
-  async predictOvulationSimple(data: SimplePeriodRequest) {
-    const response = await fetch(`${API_BASE_URL}/predict-ovulation/simple`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    return response.json();
-  },
-
-  async predictOvulationAdvanced(data: AdvancedPeriodRequest) {
-    const response = await fetch(`${API_BASE_URL}/predict-ovulation/advanced`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    return response.json();
-  },
-
+  // ✅ JSON-based chatbot (alternative endpoint)
   async getChatbotResponse(data: ChatbotRequest) {
     const response = await fetch(`${API_BASE_URL}/chatbot`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+
+    if (!response.ok) throw new Error('Failed to get chatbot response.');
     return response.json();
   },
 };

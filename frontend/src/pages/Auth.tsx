@@ -9,6 +9,7 @@ import { auth } from "@/config/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import doctorImage from "@/assets/doctor.jpg";
 
 const Auth = () => {
   const { user, loading: authLoading } = useAuth();
@@ -88,7 +89,7 @@ const Auth = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-pink-400/20 to-purple-400/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
           <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/50 transform group-hover:scale-105 transition-all duration-500">
             <img 
-              src="src/assets/doctor.jpg" 
+              src={doctorImage} 
               alt="Healthcare Professional" 
               className="w-full h-[600px] object-cover rounded-2xl shadow-xl"
             />

@@ -7,6 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import SOSModal from "@/components/SOSModal";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -76,7 +78,7 @@ const Dashboard = () => {
               <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent tracking-tight">
                 SheCares Dashboard
               </h1>
-              <p className="text-gray-600 mt-1 font-medium">Welcome back, {user?.displayName || 'User'} ✨</p>
+              <p className="text-gray-600 mt-1 font-medium">Welcome, {user?.displayName || 'User'} ✨</p>
             </div>
           </div>
           <Button 
@@ -164,6 +166,66 @@ const Dashboard = () => {
               <CardContent className="relative z-10">
                 <p className="text-sm text-gray-500 leading-relaxed">
                   Get personalized mental health guidance and professional support
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/wearable-connect" className="group">
+            <Card className="h-full bg-white border-0 shadow-xl hover:shadow-2xl hover:shadow-green-200/60 transition-all duration-500 hover:scale-105 hover:-translate-y-2 transform cursor-pointer overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-100 to-teal-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <CardHeader className="relative z-10 pb-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-3xl">⌚</span>
+                </div>
+                <CardTitle className="flex items-center space-x-2 text-xl font-bold text-gray-800">
+                  <span>Wearable Connect</span>
+                </CardTitle>
+                <CardDescription className="text-gray-600 font-medium">Sync devices and track vitals</CardDescription>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  Connect your smartwatch and fitness trackers for real-time health monitoring
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/caretaker-help" className="group">
+            <Card className="h-full bg-white border-0 shadow-xl hover:shadow-2xl hover:shadow-amber-200/60 transition-all duration-500 hover:scale-105 hover:-translate-y-2 transform cursor-pointer overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-100 to-orange-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <CardHeader className="relative z-10 pb-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-3xl">🤝</span>
+                </div>
+                <CardTitle className="flex items-center space-x-2 text-xl font-bold text-gray-800">
+                  <span>Caretaker Help</span>
+                </CardTitle>
+                <CardDescription className="text-gray-600 font-medium">Connect with professional caregivers</CardDescription>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  Find trusted caretakers and support services for you and your loved ones
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/food-analyzer" className="group">
+            <Card className="h-full bg-white border-0 shadow-xl hover:shadow-2xl hover:shadow-emerald-200/60 transition-all duration-500 hover:scale-105 hover:-translate-y-2 transform cursor-pointer overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 to-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <CardHeader className="relative z-10 pb-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-3xl">🍎</span>
+                </div>
+                <CardTitle className="flex items-center space-x-2 text-xl font-bold text-gray-800">
+                  <span>Food Analyzer</span>
+                </CardTitle>
+                <CardDescription className="text-gray-600 font-medium">Nutrition tracking and meal planning</CardDescription>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  Analyze your meals, track nutrition, and get personalized diet recommendations
                 </p>
               </CardContent>
             </Card>

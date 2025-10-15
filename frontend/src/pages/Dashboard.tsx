@@ -7,8 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import SOSModal from "@/components/SOSModal";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);

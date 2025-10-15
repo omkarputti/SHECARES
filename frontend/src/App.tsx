@@ -13,6 +13,7 @@ import { RequireAuth } from "./components/RequireAuth";
 import TherapistSupport from "./pages/TherapistSupport";
 import BookingPage from "./pages/BookingPage";
 import FindProfessional from "./pages/FindProfessional";
+import WearableConnect from "./pages/wearable-connect";  // 👈 fixed import name
 
 const App = () => (
   <>
@@ -29,6 +30,7 @@ const App = () => (
       <Route path="/therapist-support" element={<RequireAuth><TherapistSupport /></RequireAuth>} />
       <Route path="/booking" element={<RequireAuth><BookingPage /></RequireAuth>} />
       <Route path="/find/:type" element={<RequireAuth><FindProfessional /></RequireAuth>} />
+      <Route path="/wearable-connect" element={<RequireAuth><WearableConnect /></RequireAuth>} /> {/* ✅ fixed */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   </>

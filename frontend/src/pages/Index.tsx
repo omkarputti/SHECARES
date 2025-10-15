@@ -124,7 +124,7 @@ export default function Index(): JSX.Element {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white font-bold shadow-lg">
               SH
             </div>
-            <span className="font-semibold text-lg text-primary">VESPERA</span>
+            <span className="font-semibold text-lg text-primary">SHECARES</span>
           </div>
 
           {/* Center links - enlarged */}

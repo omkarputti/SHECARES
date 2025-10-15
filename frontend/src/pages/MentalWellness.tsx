@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { apiService } from "../services/api";
+import Header from "../components/Header";
 
 const BrainIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M12 5a3 3 0 1 0-5.993 1.002h.001a4 4 0 0 0-3.38 5.42A6 6 0 0 0 12 18a6 6 0 0 0 5.373-3.578A4 4 0 0 0 18.998 9a3 3 0 1 0-6.995-4.002h-.001Z"/><path d="M12 18a6 6 0 0 1-5.373-3.578m10.746 0A6 6 0 0 0 12 18"/><path d="M12 5.002a3 3 0 0 1 5.993 1H12v6h6"/><path d="M6.007 6.002A3 3 0 0 0 12 5.002V11H6.002Z"/></svg>
@@ -94,8 +95,9 @@ const MentalWellness = () => {
   };
 
   return (
+    
     <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
-      {/* Placeholder for Header */}
+      <Header />
       <header className="py-4 text-center text-2xl font-bold shadow-sm bg-white">Mental Wellness Support</header>
       
       <main className="container mx-auto px-4 py-8">

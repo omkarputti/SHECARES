@@ -1,112 +1,121 @@
-import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
-import { auth } from "@/config/firebase";
-import { signOut } from "firebase/auth";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  Heart,
+  Calendar,
+  Brain,
+  Shield,
+  Bot,
+  Users,
+  MapPin,
+} from "lucide-react"; // adjust icons if needed
 
 const Header = () => {
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
+  const [featuresOpen, setFeaturesOpen] = useState(false);
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      navigate("/");
-    } catch (error) {
-      console.error("Failed to log out:", error);
-    }
-  };
-
-  const siteName = "Vespera";
+  const features = [
+    { icon: Heart, title: "Pregnancy Care", description: "Smart health insights", link: "/pregnancy-care" },
+    { icon: Calendar, title: "Period Tracker", description: "Cycle prediction", link: "/period-tracking" },
+    { icon: Brain, title: "Mental Wellness", description: "Mood & therapy tools", link: "/mental-wellness" },
+    { icon: Users, title: "Therapist Connect", description: "Expert support", link: "/therapist-support" },
+    { icon: Shield, title: "Caretaker Mode", description: "Safety & tracking", link: "/caretaker" },
+    { icon: Bot, title: "AI Assistant", description: "Personalized health tips", link: "/ai-assistant" },
+    { icon: MapPin, title: "Nearby Centers", description: "Find care easily", link: "/centers" },
+  ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-gradient-to-r from-pink-50/80 via-white/70 to-purple-50/80 border-b border-white/30 shadow-[0_4px_30px_rgba(0,0,0,0.05)]">
-      <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo + Gradient Glow */}
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: "spring", stiffness: 200, damping: 10 }}
-        >
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-fuchsia-500 to-pink-500 flex items-center justify-center shadow-lg shadow-pink-200">
-              <span className="text-white font-bold text-lg">VS</span>
-            </div>
-            <span className="font-extrabold text-2xl bg-gradient-to-r from-fuchsia-600 via-pink-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm tracking-tight">
-              {siteName}
-            </span>
-          </Link>
-        </motion.div>
-
-        {/* Navigation Links */}
-        <div className="hidden md:flex items-center space-x-8 font-medium">
-          <Link
-            to={user ? "/pregnancy-care" : "/auth"}
-            className="text-gray-600 hover:text-fuchsia-600 transition-colors duration-200"
-          >
-            Pregnancy
-          </Link>
-          <Link
-            to={user ? "/period-tracking" : "/auth"}
-            className="text-gray-600 hover:text-fuchsia-600 transition-colors duration-200"
-          >
-            Periods
-          </Link>
-          <Link
-            to={user ? "/mental-wellness" : "/auth"}
-            className="text-gray-600 hover:text-fuchsia-600 transition-colors duration-200"
-          >
-            Wellness
-          </Link>
-          <Link
-            to={user ? "/therapist-support" : "/auth"}
-            className="text-gray-600 hover:text-fuchsia-600 transition-colors duration-200"
-          >
-            Therapists
-          </Link>
+    <header className="w-full z-30 backdrop-blur-md bg-white/50 fixed top-0 left-0">
+      <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        {/* Logo */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white font-bold shadow-lg">
+            SH
+          </div>
+          <span className="font-semibold text-lg text-primary">SHECARES</span>
         </div>
 
-        {/* Auth Buttons */}
-        <div className="flex items-center space-x-3">
-          {loading ? (
-            <div className="h-10 w-44 animate-pulse bg-gradient-to-r from-pink-100 to-purple-100 rounded-xl shadow-inner"></div>
-          ) : user ? (
-            <>
-              <Button
-                variant="ghost"
-                className="text-gray-600 hover:text-fuchsia-600 font-medium transition-all duration-200"
-                asChild
+        {/* Center Links */}
+        <div className="hidden md:flex items-center gap-8">
+          <Link to="/" className="text-base font-semibold hover:text-primary transition-colors">
+            Home
+          </Link>
+
+          {/* Features Dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => setFeaturesOpen(true)}
+            onMouseLeave={() => setFeaturesOpen(false)}
+          >
+            <button
+              onClick={() => setFeaturesOpen((s) => !s)}
+              className="text-base font-semibold flex items-center gap-2 hover:text-primary transition-colors"
+              aria-expanded={featuresOpen}
+            >
+              Features
+              <svg
+                className={`w-4 h-4 transform transition-transform ${
+                  featuresOpen ? "rotate-180" : ""
+                }`}
+                viewBox="0 0 20 20"
+                fill="currentColor"
               >
-                <Link to="/dashboard">Dashboard</Link>
-              </Button>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={handleLogout}
-                  className="rounded-xl px-5 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200"
-                >
-                  Logout
-                </Button>
-              </motion.div>
-            </>
-          ) : (
-            <>
-              <Button
-                variant="ghost"
-                className="text-gray-600 hover:text-fuchsia-600 font-medium transition-all duration-200"
-                asChild
-              >
-                <Link to="/auth">Log In</Link>
-              </Button>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  className="rounded-xl px-5 py-2 bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white font-semibold shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200"
-                  asChild
-                >
-                  <Link to="/auth">Get Started</Link>
-                </Button>
-              </motion.div>
-            </>
-          )}
+                <path
+                  fillRule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.1 1.02l-4.25 4.653a.75.75 0 01-1.07 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+
+            <div
+              className={`absolute left-1/2 transform -translate-x-1/2 mt-3 w-64 bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl border border-pink-200 transition-all duration-200 ${
+                featuresOpen ? "opacity-100 visible" : "opacity-0 invisible"
+              }`}
+            >
+              <div className="p-3">
+                {features.map((f, i) => {
+                  const Icon = f.icon;
+                  return (
+                    <Link
+                      key={i}
+                      to={f.link}
+                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-pink-100 transition-colors"
+                    >
+                      <Icon className="w-5 h-5 text-pink-600" />
+                      <div className="text-sm">
+                        <div className="font-semibold">{f.title}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {f.description}
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <a
+            href="#help"
+            className="text-base font-semibold hover:text-primary transition-colors"
+          >
+            Help
+          </a>
+          <a
+            href="#contact"
+            className="text-base font-semibold hover:text-primary transition-colors"
+          >
+            Contact Info
+          </a>
+        </div>
+
+        {/* CTA Button */}
+        <div className="hidden md:block">
+          <Link to="/dashboard">
+            <button className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-2 rounded-full shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 font-semibold">
+              Get Started
+            </button>
+          </Link>
         </div>
       </nav>
     </header>

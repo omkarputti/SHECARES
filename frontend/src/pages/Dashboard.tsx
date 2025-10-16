@@ -79,13 +79,30 @@ const Dashboard = () => {
               <p className="text-gray-600 mt-1 font-medium">Welcome, {user?.displayName || 'User'} ✨</p>
             </div>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={handleLogout}
-            className="shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-2 hover:border-pink-300 font-semibold"
-          >
-            Logout
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Link to="/">
+              <Button 
+                variant="outline" 
+                className="shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-2 hover:border-pink-300 font-semibold"
+              >
+                Back
+              </Button>
+            </Link>
+            <Button 
+              variant="outline" 
+              onClick={() => toast({ title: "Help", description: "This is where help content would go." })}
+              className="shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-2 hover:border-pink-300 font-semibold"
+            >
+              Help
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleLogout}
+              className="shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-2 hover:border-pink-300 font-semibold"
+            >
+              Logout
+            </Button>
+          </div>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom duration-700">

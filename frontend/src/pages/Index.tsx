@@ -185,7 +185,7 @@ export default function Index(): JSX.Element {
               </div>
             </div>
 
-            <a href="#help" className="text-base font-semibold hover:text-primary transition-colors">
+            <a href="/Help" className="text-base font-semibold hover:text-primary transition-colors">
               Help
             </a>
             <a href="/Contact" className="text-base font-semibold hover:text-primary transition-colors">

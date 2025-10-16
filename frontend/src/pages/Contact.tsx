@@ -232,6 +232,7 @@ const Contact = () => {
                 <p className="text-sm text-gray-600">SheCares Technologies, Bengaluru</p>
               </div>
             </div>
+            <footer />
           </CardContent>
         </Card>
       </div>

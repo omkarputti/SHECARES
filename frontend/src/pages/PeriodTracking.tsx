@@ -225,8 +225,6 @@ const PeriodTracking = () => {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 };

@@ -88,9 +88,10 @@ const Dashboard = () => {
                 Back
               </Button>
             </Link>
+            
             <Button 
               variant="outline" 
-              onClick={() => toast({ title: "Help", description: "This is where help content would go." })}
+              onClick={() => navigate("/Help")}
               className="shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-2 hover:border-pink-300 font-semibold"
             >
               Help
@@ -226,7 +227,7 @@ const Dashboard = () => {
             </Card>
           </Link>
 
-          <Link to="/food-analyzer" className="group">
+          <Link to="/FoodAnalyser" className="group">
             <Card className="h-full bg-white border-0 shadow-xl hover:shadow-2xl hover:shadow-emerald-200/60 transition-all duration-500 hover:scale-105 hover:-translate-y-2 transform cursor-pointer overflow-hidden relative">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 to-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <CardHeader className="relative z-10 pb-4">

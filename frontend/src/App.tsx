@@ -15,6 +15,8 @@ import BookingPage from "./pages/BookingPage";
 import FindProfessional from "./pages/FindProfessional";
 import WearableConnect from "./pages/wearable-connect";
 import Contact from "./pages/Contact";
+import Help from  "./pages/Help";
+import FoodAnalyser from  "./pages/FoodAnalyser";
 
 const App = () => (
   <>
@@ -24,9 +26,11 @@ const App = () => (
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
       <Route path="/Contact" element={<Contact />} />
+      <Route path="/Help" element={<Help />} />
       <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
       <Route path="/pregnancy-care" element={<RequireAuth><PregnancyCare /></RequireAuth>} />
       <Route path="/period-tracking" element={<RequireAuth><PeriodTracking /></RequireAuth>} />
+      <Route path="/FoodAnalyser" element={<RequireAuth><FoodAnalyser /></RequireAuth>} />
       <Route path="/mental-wellness" element={<RequireAuth><MentalWellness /></RequireAuth>} />
       <Route path="/report" element={<RequireAuth><Report /></RequireAuth>} />
       <Route path="/therapist-support" element={<RequireAuth><TherapistSupport /></RequireAuth>} />

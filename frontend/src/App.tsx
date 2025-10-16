@@ -13,7 +13,8 @@ import { RequireAuth } from "./components/RequireAuth";
 import TherapistSupport from "./pages/TherapistSupport";
 import BookingPage from "./pages/BookingPage";
 import FindProfessional from "./pages/FindProfessional";
-import WearableConnect from "./pages/wearable-connect";  // 👈 fixed import name
+import WearableConnect from "./pages/wearable-connect";
+import Contact from "./pages/Contact";
 
 const App = () => (
   <>
@@ -22,6 +23,7 @@ const App = () => (
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
+      <Route path="/Contact" element={<Contact />} />
       <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
       <Route path="/pregnancy-care" element={<RequireAuth><PregnancyCare /></RequireAuth>} />
       <Route path="/period-tracking" element={<RequireAuth><PeriodTracking /></RequireAuth>} />

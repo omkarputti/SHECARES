@@ -96,13 +96,13 @@ const Header = () => {
           </div>
 
           <a
-            href="#help"
+            href="/help"
             className="text-base font-semibold hover:text-primary transition-colors"
           >
             Help
           </a>
           <a
-            href="#contact"
+            href="/contact"
             className="text-base font-semibold hover:text-primary transition-colors"
           >
             Contact Info

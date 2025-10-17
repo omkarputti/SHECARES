@@ -20,7 +20,7 @@ const EmergencySafety = () => {
 
   return (
     <section className="bg-destructive/5 border border-destructive/20 rounded-lg p-6 mb-8">
-      <div className="flex items-center justify-center gap-3 mb-4"> {/* Centered the title */}
+      <div className="flex items-center justify-center gap-3 mb-4"> 
         <Shield className="h-6 w-6 text-destructive" />
         <h3 className="text-xl font-semibold">Emergency Safety</h3>
       </div>
@@ -46,7 +46,7 @@ const EmergencySafety = () => {
         </Card>
       </div>
 
-      <div className="text-sm text-muted-foreground text-center"> {/* Centered the bottom text */}
+      <div className="text-sm text-muted-foreground text-center"> 
         <p className="flex items-center justify-center gap-2">
           <Users className="h-4 w-4" />
           Emergency contacts and location sharing are active for your safety.

@@ -17,6 +17,7 @@ import WearableConnect from "./pages/wearable-connect";
 import Contact from "./pages/Contact";
 import Help from  "./pages/Help";
 import FoodAnalyser from  "./pages/FoodAnalyser";
+import CareTaker from  "./pages/CareTaker";
 
 const App = () => (
   <>
@@ -28,6 +29,7 @@ const App = () => (
       <Route path="/Contact" element={<Contact />} />
       <Route path="/Help" element={<Help />} />
       <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+      <Route path="/Caretaker" element={<RequireAuth><CareTaker /></RequireAuth>} />
       <Route path="/pregnancy-care" element={<RequireAuth><PregnancyCare /></RequireAuth>} />
       <Route path="/period-tracking" element={<RequireAuth><PeriodTracking /></RequireAuth>} />
       <Route path="/FoodAnalyser" element={<RequireAuth><FoodAnalyser /></RequireAuth>} />
@@ -36,7 +38,7 @@ const App = () => (
       <Route path="/therapist-support" element={<RequireAuth><TherapistSupport /></RequireAuth>} />
       <Route path="/booking" element={<RequireAuth><BookingPage /></RequireAuth>} />
       <Route path="/find/:type" element={<RequireAuth><FindProfessional /></RequireAuth>} />
-      <Route path="/wearable-connect" element={<RequireAuth><WearableConnect /></RequireAuth>} /> {/* ✅ fixed */}
+      <Route path="/wearable-connect" element={<RequireAuth><WearableConnect /></RequireAuth>} /> 
       <Route path="*" element={<NotFound />} />
     </Routes>
   </>

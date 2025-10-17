@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Loader } from "lucide-react";
 
-type SosState = 
+type SosState =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'success', location: GeolocationCoordinates }
@@ -10,36 +10,12 @@ type SosState =
 interface SOSModalProps {
   isOpen: boolean;
   onClose: () => void;
+  sosState: SosState;
+  onRetry: () => void;
+  emergencyContacts: { name: string; phone: string }[];
 }
 
-const SOSModal: React.FC<SOSModalProps> = ({ isOpen, onClose }) => {
-  const [sosState, setSosState] = useState<SosState>({ status: 'idle' });
-
-  useEffect(() => {
-    if (isOpen) {
-      setSosState({ status: 'loading' });
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setSosState({ status: 'success', location: position.coords });
-          },
-          () => {
-            setSosState({ 
-              status: 'error', 
-              message: "Unable to retrieve your location. Please enable location services in your browser settings." 
-            });
-          }
-        );
-      } else {
-        setSosState({ 
-          status: 'error', 
-          message: "Geolocation is not supported by your browser." 
-        });
-      }
-    }
-  }, [isOpen]);
-
+const SOSModal: React.FC<SOSModalProps> = ({ isOpen, onClose, sosState, onRetry, emergencyContacts }) => {
   if (!isOpen) {
     return null;
   }
@@ -51,7 +27,7 @@ const SOSModal: React.FC<SOSModalProps> = ({ isOpen, onClose }) => {
           <div className="text-center py-6">
             <Loader className="animate-spin mx-auto h-12 w-12 text-blue-600" />
             <h3 className="mt-4 text-lg font-medium text-gray-800">Finding your location...</h3>
-            <p className="text-sm text-gray-500">Please wait.</p>
+            <p className="text-sm text-gray-500">Please approve the location request.</p>
           </div>
         );
 
@@ -59,6 +35,8 @@ const SOSModal: React.FC<SOSModalProps> = ({ isOpen, onClose }) => {
         const { location } = sosState;
         const mapLink = `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
         const message = `Emergency! My current location is: ${mapLink}`;
+        const contactNumbers = emergencyContacts.map(c => c.phone).join(',');
+        
         return (
           <div className="text-center py-4">
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
@@ -67,14 +45,16 @@ const SOSModal: React.FC<SOSModalProps> = ({ isOpen, onClose }) => {
               </svg>
             </div>
             <h3 className="text-lg font-medium text-green-700 mb-2">Location Found!</h3>
-            <p className="text-sm text-gray-600 mb-4">Share this information with your emergency contacts immediately.</p>
+            <p className="text-sm text-gray-600 mb-4">Share this information immediately.</p>
             <div className="bg-green-50 p-4 rounded-lg text-left text-sm text-gray-800 break-words mb-4">
-              <p><strong>Latitude:</strong> {location.latitude.toFixed(5)}</p>
-              <p><strong>Longitude:</strong> {location.longitude.toFixed(5)}</p>
-              <a href={mapLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline inline-block mt-2 font-semibold">View on Google Maps</a>
+              <a href={mapLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline inline-block font-semibold">View on Google Maps</a>
             </div>
             <div className="space-y-2">
-              <a href={`sms:?body=${encodeURIComponent(message)}`} className="block w-full text-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300">Share via SMS</a>
+              {contactNumbers ? (
+                <a href={`sms:${contactNumbers}?body=${encodeURIComponent(message)}`} className="block w-full text-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300">Share with Emergency Contacts</a>
+              ) : (
+                <a href={`sms:?body=${encodeURIComponent(message)}`} className="block w-full text-center bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300">Share via SMS (No contacts saved)</a>
+              )}
               <a href="tel:112" className="block w-full text-center bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300">Call Emergency Services (112)</a>
               <button onClick={onClose} className="block w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
             </div>
@@ -91,7 +71,10 @@ const SOSModal: React.FC<SOSModalProps> = ({ isOpen, onClose }) => {
             </div>
             <h3 className="text-lg font-medium text-red-700 mb-2">Location Error</h3>
             <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{sosState.message}</p>
-            <button onClick={onClose} className="mt-4 w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+            <div className="mt-4 flex gap-2">
+              <button onClick={onRetry} className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">Retry</button>
+              <button onClick={onClose} className="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300">Close</button>
+            </div>
           </div>
         );
 
@@ -101,7 +84,6 @@ const SOSModal: React.FC<SOSModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    // The z-index is correctly placed here now.
     <div className="relative z-50">
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
       <div className="fixed inset-0 z-10 w-screen overflow-y-auto">

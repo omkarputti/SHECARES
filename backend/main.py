@@ -15,7 +15,7 @@ load_dotenv()
 
 # --- FastAPI App Initialization ---
 app = FastAPI(
-    title="Vespera AI API",
+    title="SheCares AI API",
     description="An integrated API for cycle prediction, pregnancy tools, and AI-powered health assistance.",
     version="3.2.0"
 )

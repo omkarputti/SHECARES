@@ -13,6 +13,11 @@ interface Medicine {
   imageUrl: string;
   remainingDays: number;
   timestamp: number;
+  // optional suggestions returned from the food suggestions API
+  foodSuggestions?: {
+    before: string[];
+    after: string[];
+  };
 }
 
 const DEFAULT_TIMES: Record<string, string> = {
@@ -34,6 +39,34 @@ const App: React.FC = () => {
     foodTiming: 'after'
   });
   const [uploadedImage, setUploadedImage] = useState<string>('');
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // compress large images to keep localStorage usage reasonable
+  const compressImage = (file: File, maxWidth = 800, quality = 0.8) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const ratio = img.width / img.height;
+          const width = Math.min(maxWidth, img.width);
+          const height = Math.round(width / ratio);
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return reject(new Error('Canvas not supported'));
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(dataUrl);
+        };
+        img.onerror = (e) => reject(e);
+        img.src = reader.result as string;
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
   const [showNotificationBanner, setShowNotificationBanner] = useState<null | { title: string; body: string }>(null);
   const notifiedRef = useRef<Record<string, number>>({}); // key -> minuteTimestamp last notified
 
@@ -57,7 +90,12 @@ const App: React.FC = () => {
 
   // Persist medicines to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(medicines));
+    try {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(medicines));
+    } catch (e) {
+      console.warn('Failed to persist medicines to localStorage (possibly quota).', e);
+      // If quota exceeded, consider trimming images from stored medicines to keep app usable
+    }
   }, [medicines]);
 
   // Soft ding using WebAudio API (subtle)
@@ -145,17 +183,39 @@ const App: React.FC = () => {
     return () => clearInterval(id);
   }, [medicines]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setUploadedImage(reader.result as string);
-      reader.readAsDataURL(file);
+      setUploadedFile(file);
+      // compress if big (e.g., >200KB)
+      if (file.size > 200 * 1024) {
+        try {
+          const compressed = await compressImage(file, 800, 0.8);
+          setUploadedImage(compressed);
+        } catch (e) {
+          console.warn('Compression failed, falling back to raw file', e);
+          const reader = new FileReader();
+          reader.onloadend = () => setUploadedImage(reader.result as string);
+          reader.readAsDataURL(file);
+        }
+      } else {
+        const reader = new FileReader();
+        reader.onloadend = () => setUploadedImage(reader.result as string);
+        reader.readAsDataURL(file);
+      }
     }
   };
 
+  // helper to read a File as data URL (promise)
+  const readFileAsDataUrl = (file: File) => new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+
   // Add medicine
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const name = formData.name.trim();
     const tabletsPerDose = Number(formData.tablets);
     const totalTablets = Number(formData.totalTablets);
@@ -169,6 +229,16 @@ const App: React.FC = () => {
     const timesPerDay = times.length;
     const totalDays = Math.floor(totalTablets / (tabletsPerDose * timesPerDay));
 
+    // ensure we have an image (await file read if necessary)
+    let imageBase = uploadedImage;
+    if (!imageBase && uploadedFile) {
+      try {
+        imageBase = await readFileAsDataUrl(uploadedFile);
+      } catch (e) {
+        console.warn('Failed reading uploaded file', e);
+      }
+    }
+
     const newMed: Medicine = {
       id: Date.now().toString(),
       name,
@@ -177,7 +247,7 @@ const App: React.FC = () => {
       timesSelected: times,
       customTimes: { ...formData.customTimes },
       foodTiming: formData.foodTiming,
-      imageUrl: uploadedImage || `https://via.placeholder.com/100x100/E9D5FF/9333EA?text=${encodeURIComponent(name[0] || 'M')}`,
+      imageUrl: imageBase || `https://via.placeholder.com/100x100/E9D5FF/9333EA?text=${encodeURIComponent(name[0] || 'M')}`,
       remainingDays: totalDays,
       timestamp: Date.now()
     };
@@ -186,7 +256,8 @@ const App: React.FC = () => {
 
     // reset form
     setFormData({ name: '', tablets: '', totalTablets: '', timeSelected: [], customTimes: { ...DEFAULT_TIMES }, foodTiming: 'after' });
-    setUploadedImage('');
+  setUploadedImage('');
+  setUploadedFile(null);
 
     // gentle confirmation
     setShowNotificationBanner({ title: 'Reminder set', body: `${name} — ${tabletsPerDose} tab(s) • ${timesPerDay} time(s)/day • ${newMed.remainingDays} day(s) left` });
@@ -255,7 +326,7 @@ const App: React.FC = () => {
           <div className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-dashed border-purple-300 hover:border-purple-500 transition-all">
-                <label className="flex flex-col items-center cursor-pointer group">
+                <label className="flex flex-col items-center cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
                   <div className="w-32 h-32 bg-white rounded-2xl shadow-lg flex items-center justify-center mb-4 group-hover:shadow-xl transition-shadow">
                     {uploadedImage ? (
                       <img src={uploadedImage} alt="Medicine" className="w-full h-full object-cover rounded-2xl" />
@@ -264,7 +335,7 @@ const App: React.FC = () => {
                     )}
                   </div>
                   <span className="text-purple-600 font-medium">Upload Medicine Photo</span>
-                  <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                 </label>
               </div>
 
@@ -287,30 +358,83 @@ const App: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-purple-700 font-medium mb-2">Time(s) of Day</label>
-                  <div className="space-y-2 bg-white p-4 rounded-xl border-2 border-purple-200">
-                    {(['Morning', 'Afternoon', 'Night'] as const).map((timeOption) => {
-                      const checked = formData.timeSelected.includes(timeOption);
-                      return (
-                        <div key={timeOption} className="flex items-center justify-between gap-2 hover:bg-purple-50 p-2 rounded-lg transition-colors">
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" checked={checked} onChange={(e) => {
-                              const newSelected = e.target.checked ? [...formData.timeSelected, timeOption] : formData.timeSelected.filter(t => t !== timeOption);
-                              setFormData({ ...formData, timeSelected: newSelected });
-                            }} className="w-5 h-5 text-purple-500 rounded border-purple-200" />
-                            <span className="text-purple-700">{timeOption}</span>
-                          </label>
+  <label className="block text-purple-700 font-medium mb-2">Time(s) of Day</label>
+  <div className="space-y-2 bg-white p-4 rounded-xl border-2 border-purple-200">
+    {(["Morning", "Afternoon", "Night"] as const).map((timeOption) => {
+      const checked = formData.timeSelected.includes(timeOption);
 
-                          <div className="flex items-center gap-2">
-                            <input type="time" value={formData.customTimes[timeOption] || DEFAULT_TIMES[timeOption]} onChange={(e) => setFormData({ ...formData, customTimes: { ...formData.customTimes, [timeOption]: e.target.value } })} className="px-3 py-2 rounded-lg border-2 border-purple-100" />
-                            <span className="text-sm text-purple-500">Default: {formatTime(DEFAULT_TIMES[timeOption])}</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    <p className="text-xs text-purple-400 mt-2">Tip: Keep defaults or choose custom times using the time picker.</p>
-                  </div>
-                </div>
+      const minTime =
+        timeOption === "Morning"
+          ? "05:00"
+          : timeOption === "Afternoon"
+          ? "12:00"
+          : "18:00";
+      const maxTime =
+        timeOption === "Morning"
+          ? "11:59"
+          : timeOption === "Afternoon"
+          ? "16.00"
+          : "23:59";
+
+      return (
+        <div
+          key={timeOption}
+          className="flex items-center justify-between gap-2 hover:bg-purple-50 p-2 rounded-lg transition-colors"
+        >
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={(e) => {
+                const newSelected = e.target.checked
+                  ? [...formData.timeSelected, timeOption]
+                  : formData.timeSelected.filter((t) => t !== timeOption);
+                setFormData({ ...formData, timeSelected: newSelected });
+              }}
+              className="w-5 h-5 text-purple-500 rounded border-purple-200"
+            />
+            <span className="text-purple-700">{timeOption}</span>
+          </label>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="time"
+              value={formData.customTimes[timeOption] || DEFAULT_TIMES[timeOption]}
+              min={minTime}
+              max={maxTime}
+              onChange={(e) => {
+                const value = e.target.value;
+                const [hour] = value.split(":").map(Number);
+                const valid =
+                  (timeOption === "Morning" && hour >= 5 && hour < 12) ||
+                  (timeOption === "Afternoon" && hour >= 12 && hour < 16) ||
+                  (timeOption === "Night" && hour >= 18 && hour <= 23);
+
+                if (!valid) {
+                  alert(`Please choose a valid ${timeOption.toLowerCase()} time.`);
+                  return;
+                }
+
+                setFormData({
+                  ...formData,
+                  customTimes: {
+                    ...formData.customTimes,
+                    [timeOption]: value,
+                  },
+                });
+              }}
+              className="px-3 py-2 rounded-lg border-2 border-purple-100"
+            />
+            <span className="text-sm text-purple-500">
+              Default: {formatTime(DEFAULT_TIMES[timeOption])}
+            </span>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
 
                 <div>
                   <label className="block text-purple-700 font-medium mb-2">Food Timing</label>
@@ -404,30 +528,32 @@ const App: React.FC = () => {
               <h4 className="font-bold text-purple-700">{med.name}</h4>
             </div>
             <button
-              onClick={async () => {
-                try {
-                  // Fetch recommendations from your backend or Gemini API
-                  const res = await fetch('/api/food-suggestions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ medicineName: med.name })
-                  });
-                  const data = await res.json(); // expected: { before: string[], after: string[] }
+  onClick={async () => {
+    try {
+  // Use BACKEND_URL env (injected at build) or default to http://localhost:3001
+  const BACKEND = (import.meta.env?.VITE_BACKEND_URL as string) || 'http://localhost:3000';
+  const res = await fetch(`${BACKEND}/api/food-suggestions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ medicineName: med.name }) // send medicine name
+      });
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      const data = await res.json(); // expected: { before: string[], after: string[] }
 
-                  setMedicines((prev) =>
-                    prev.map((m) =>
-                      m.id === med.id ? { ...m, foodSuggestions: data } : m
-                    )
-                  );
-                } catch (e) {
-                  console.error('Failed to fetch food suggestions', e);
-                  alert('Failed to fetch food suggestions');
-                }
-              }}
-              className="px-4 py-2 bg-gradient-to-r from-pink-400 to-purple-500 text-white rounded-xl font-semibold shadow hover:shadow-lg transition-all"
-            >
-              🍽️ Get Food Suggestions
-            </button>
+      setMedicines((prev) =>
+        prev.map((m) =>
+          m.id === med.id ? { ...m, foodSuggestions: data } : m
+        )
+      );
+    } catch (e) {
+      console.error('Failed to fetch food suggestions', e);
+      alert('Failed to fetch food suggestions');
+    }
+  }}
+  className="px-4 py-2 bg-gradient-to-r from-pink-400 to-purple-500 text-white rounded-xl font-semibold shadow hover:shadow-lg transition-all"
+>
+  🍽️ Get Food Suggestions
+</button>
           </div>
 
           {med.foodSuggestions && (

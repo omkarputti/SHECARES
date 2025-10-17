@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const AlertTriangle = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"
-    viewBox="0 0 24 24"
+    viewBox="0 0 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -24,7 +24,7 @@ const Shield = (props) => (
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"
-    viewBox="0 0 24 24"
+    viewBox="0 0 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -41,7 +41,7 @@ const Phone = (props) => (
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"
-    viewBox="0 0 24 24"
+    viewBox="0 0 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -58,7 +58,7 @@ const Loader = (props) => (
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"
-    viewBox="0 0 24 24"
+    viewBox="0 0 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -74,32 +74,56 @@ const Loader = (props) => (
 const SOSModal = ({ isOpen, onClose }) => {
   const [sosState, setSosState] = useState({ status: "idle", location: null, message: "" });
 
-  useEffect(() => {
-    if (isOpen) {
-      setSosState({ status: "loading", location: null, message: "" });
+  const fetchLocation = useCallback(() => {
+    console.log("Attempting to fetch location...");
+    setSosState({ status: "loading", location: null, message: "" });
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setSosState({ status: "success", location: position.coords, message: "" });
-          },
-          () => {
-            setSosState({
-              status: "error",
-              location: null,
-              message: "Unable to retrieve location. Please enable location services.",
-            });
-          }
-        );
-      } else {
+    if (!navigator.geolocation) {
+       console.error("Geolocation API is not supported by this browser.");
+       setSosState({ status: "error", location: null, message: "Geolocation is not supported by your browser." });
+       return;
+    }
+    
+    if (window.isSecureContext === false) {
+       console.error("Geolocation API called from an insecure context.");
+       setSosState({ status: "error", location: null, message: "Location API is only available on secure connections (HTTPS) or localhost." });
+       return;
+    }
+    
+    console.log("Geolocation API is available. Requesting current position...");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log("Successfully retrieved position:", position);
+        setSosState({ status: "success", location: position.coords, message: "" });
+      },
+      (error) => {
+         console.error("Geolocation error:", error);
+         let message = "An unknown error occurred.";
+         switch(error.code) {
+            case error.PERMISSION_DENIED:
+               message = "Location access was denied. Please allow location access in your browser's site settings and try again.";
+               break;
+            case error.POSITION_UNAVAILABLE:
+               message = "Location information is unavailable. This may be due to a network issue or your device's location services being turned off.";
+               break;
+            case error.TIMEOUT:
+               message = "The request to get user location timed out. Please try again.";
+               break;
+         }
         setSosState({
           status: "error",
           location: null,
-          message: "Geolocation is not supported by your browser.",
+          message: message,
         });
       }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchLocation();
     }
-  }, [isOpen]);
+  }, [isOpen, fetchLocation]);
 
   if (!isOpen) return null;
 
@@ -112,7 +136,7 @@ const SOSModal = ({ isOpen, onClose }) => {
             <h3 className="mt-4 text-lg font-medium text-gray-800">
               Finding your location...
             </h3>
-            <p className="text-sm text-gray-500">Please wait.</p>
+            <p className="text-sm text-gray-500">Please approve the location request.</p>
           </div>
         );
       case "success":
@@ -166,9 +190,14 @@ const SOSModal = ({ isOpen, onClose }) => {
             <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
               {sosState.message}
             </p>
-            <button onClick={onClose} className="mt-4 w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300">
-              Close
-            </button>
+            <div className="mt-4 flex gap-2">
+                <button onClick={fetchLocation} className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
+                    Retry
+                </button>
+                <button onClick={onClose} className="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300">
+                    Close
+                </button>
+            </div>
           </div>
         );
       default:

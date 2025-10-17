@@ -3,20 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import {
-  MessageCircle,
-  Search,
-  Book,
-  Video,
-  FileText,
-  Users,
-  Zap,
-  Shield,
-  Upload,
-  Download,
-  Heart,
-  Send
-} from "lucide-react";
+import { MessageCircle, Search, Book, Video, FileText, Users, Zap, Shield, Upload, Download, Send } from "lucide-react";
 import Header from "@/components/Header";
 
 const Help = () => {
@@ -27,7 +14,6 @@ const Help = () => {
   const chatEndRef = useRef(null);
   const firstRender = useRef(true);
 
-  // Scroll to bottom only after user or bot adds new messages (not on first render)
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;
@@ -36,7 +22,6 @@ const Help = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
 
-  // Send message to Flask chatbot
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 

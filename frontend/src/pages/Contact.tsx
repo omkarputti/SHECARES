@@ -3,16 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  Send,
-  Building,
-  Users,
-  Heart
-} from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Send, Building, Users, Heart, Navigation } from "lucide-react";
 import Header from "@/components/Header";
 
 const Contact = () => {
@@ -23,7 +14,7 @@ const Contact = () => {
         <br></br>
         <br></br>
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-extrabold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-extrabold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
             Contact SheCares
           </h1>
           <p className="text-lg text-gray-700 max-w-2xl mx-auto mt-3">
@@ -219,19 +210,38 @@ const Contact = () => {
         </div>
 
         {/* Location Map Placeholder */}
-        <Card className="bg-white/70 backdrop-blur-md border-0 shadow-lg mt-8">
+        <Card className="bg-white/70 backdrop-blur-md border-0 shadow-lg mt-8 transition-transform duration-300 hover:-translate-y-1 overflow-hidden">
           <CardHeader>
             <CardTitle className="text-pink-600">Find Us</CardTitle>
             <CardDescription className="text-gray-600">
-              Our wellness hub in Bengaluru, India
+              Our wellness hub in Chikkodi, India
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-64 bg-gradient-to-r from-pink-200 to-purple-200 rounded-lg flex items-center justify-center">
+            <div className="rounded-lg overflow-hidden h-[450px] w-full ">
               <div className="text-center">
-                <MapPin className="h-12 w-12 mx-auto mb-2 text-pink-600" />
-                <p className="text-gray-700">Interactive Map</p>
-                <p className="text-sm text-gray-600">SheCares Technologies, Bengaluru</p>
+                <iframe
+                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d245680.10404511937!2d74.5111717!3d15.8170452!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc0c21b94947f8b%3A0xb26d98fea8c2b6c8!2sK.L.E.%20College%20of%20Engineering%20%26%20Technology!5e0!3m2!1sen!2sin!4v1760685593817!5m2!1sen!2sin"
+                width="100%"
+                height="100%"
+                className="absolute inset-0"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+              <div className="pointer-events-auto w-fit">
+               <a 
+                 href="https://maps.app.goo.gl/D8sssoqcuXrFLcZW7"
+                 target="_blank" 
+                 rel="noopener noreferrer"
+               >
+                  <Button className="bg-white text-gray-800 hover:bg-gray-200 shadow-2xl">
+                      <Navigation className="h-4 w-4 mr-2" />
+                      Get Directions
+                  </Button>
+               </a>
+            </div>
               </div>
             </div>
             <footer />

@@ -38,7 +38,7 @@ const App = () => (
       <Route path="/therapist-support" element={<RequireAuth><TherapistSupport /></RequireAuth>} />
       <Route path="/booking" element={<RequireAuth><BookingPage /></RequireAuth>} />
       <Route path="/find/:type" element={<RequireAuth><FindProfessional /></RequireAuth>} />
-      <Route path="/wearable-connect" element={<RequireAuth><WearableConnect /></RequireAuth>} /> {/* ✅ fixed */}
+      <Route path="/wearable-connect" element={<RequireAuth><WearableConnect /></RequireAuth>} /> 
       <Route path="*" element={<NotFound />} />
     </Routes>
   </>

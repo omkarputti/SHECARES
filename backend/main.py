@@ -8,7 +8,6 @@ import pandas as pd
 import joblib
 
 # --- Local imports ---
-from food_analysis import router as food_router
 from chat_ai import router as chat_router
 
 load_dotenv()
@@ -23,7 +22,7 @@ app = FastAPI(
 # --- CORS Configuration ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173, http://localhost:8080, http://localhost:8000"],
+    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173, http://localhost:8080, http://localhost:8000, http://localhost:8003"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -94,5 +93,5 @@ def predict_ovulation_advanced(request: AdvancedPeriodRequest):
     }
 
 # --- Include Separate Routers ---
-app.include_router(food_router)
+
 app.include_router(chat_router)

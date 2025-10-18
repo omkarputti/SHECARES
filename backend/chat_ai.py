@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 load_dotenv()
 
-router = APIRouter(prefix="/chat", tags=["Chat AI"])
+router = APIRouter(tags=["Chat AI"])
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 

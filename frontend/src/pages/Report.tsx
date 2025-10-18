@@ -6,6 +6,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import Header from "@/components/Header";
+
 
 
 
@@ -76,7 +78,14 @@ const Report = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
+      <Header />
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
       <Card className="w-full max-w-lg">
+        <br></br>
+        <br></br>
         <CardHeader>
           <CardTitle>Report an Incident</CardTitle>
           <CardDescription>

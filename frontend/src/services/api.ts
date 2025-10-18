@@ -100,7 +100,7 @@ export const apiService = {
     const formData = new FormData();
     formData.append('message', message);
 
-    const response = await fetch(`${API_BASE_URL}/chat/text`, {
+    const response = await fetch(`http://0.0.0.0:8003/text`, {
       method: 'POST',
       body: formData,
     });

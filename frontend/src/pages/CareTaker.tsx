@@ -531,7 +531,7 @@ const App: React.FC = () => {
   onClick={async () => {
     try {
   // Use BACKEND_URL env (injected at build) or default to http://localhost:3001
-  const BACKEND = (import.meta.env?.VITE_BACKEND_URL as string) || 'http://localhost:3000';
+  const BACKEND = (import.meta.env?.VITE_BACKEND_URL as string) || 'http://0.0.0.0:8000';
   const res = await fetch(`${BACKEND}/api/food-suggestions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

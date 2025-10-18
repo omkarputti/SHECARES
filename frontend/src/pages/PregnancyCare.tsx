@@ -69,7 +69,7 @@ const PregnancyCare = () => {
     setDueDateError(null);
     setDueDate(null);
     try {
-      const response = await fetch("http://localhost:8000/calculate-due-date", {
+      const response = await fetch("http://localhost:8002/calculate-due-date", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lmp_date: lmpDate }),
@@ -98,7 +98,7 @@ const PregnancyCare = () => {
     formData.append("file", foodImage);
 
     try {
-      const response = await fetch("http://localhost:8000/food/analyse", {
+      const response = await fetch("http://localhost:8002/food/analyse", {
         method: "POST",
         body: formData,
       });

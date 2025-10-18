@@ -17,10 +17,9 @@ const Header = () => {
     { icon: Heart, title: "Pregnancy Care", description: "Smart health insights", link: "/pregnancy-care" },
     { icon: Calendar, title: "Period Tracker", description: "Cycle prediction", link: "/period-tracking" },
     { icon: Brain, title: "Mental Wellness", description: "Mood & therapy tools", link: "/mental-wellness" },
-    { icon: Users, title: "Therapist Connect", description: "Expert support", link: "/therapist-support" },
-    { icon: Shield, title: "Caretaker Mode", description: "Safety & tracking", link: "/caretaker" },
-    { icon: Bot, title: "AI Assistant", description: "Personalized health tips", link: "/ai-assistant" },
-    { icon: MapPin, title: "Nearby Centers", description: "Find care easily", link: "/centers" },
+    { icon: Shield, title: "Caretaker Help", description: "Safety & tracking", link: "/caretaker" },
+    { icon: Bot, title: "Report Incident", description: "Report any issue", link: "/report" },
+    { icon: MapPin, title: "Food Analyzer", description: "Scan Your Food", link: "/FoodAnalyser" },
   ];
 
   return (

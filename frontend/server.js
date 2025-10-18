@@ -1,46 +1,148 @@
-import express from "express";
-import mongoose from "mongoose";
-import cors from "cors";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import Header from "@/components/Header";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const Report = () => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
-// 🔗 MongoDB connection
-mongoose.connect("mongodb+srv://omkarputti14_db_user:SrNWlwf8PoWZPGGz@vespera.xzrera7.mongodb.net/?retryWrites=true&w=majority&appName=vespera", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("✅ MongoDB Connected"))
-.catch((err) => console.log("❌ MongoDB Error:", err));
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-// 🧾 Report Schema
-const reportSchema = new mongoose.Schema({
-  incidentType: String,
-  date: String,
-  time: String,
-  location: String,
-  description: String,
-  isAnonymous: Boolean,
-  name: String,
-  email: String,
-  createdAt: { type: Date, default: Date.now }
-});
+    const data = {
+      incidentType: (document.getElementById("incident-type") as HTMLInputElement)?.value,
+      date: (document.getElementById("date") as HTMLInputElement)?.value,
+      time: (document.getElementById("time") as HTMLInputElement)?.value,
+      location: (document.getElementById("location") as HTMLInputElement)?.value,
+      description: (document.getElementById("description") as HTMLTextAreaElement)?.value,
+      name: (document.getElementById("name") as HTMLInputElement)?.value,
+      phone: (document.getElementById("phone") as HTMLInputElement)?.value,
+    };
 
-const Report = mongoose.model("Report", reportSchema);
+    try {
+      const res = await fetch("http://localhost:5000/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-// 📨 POST route to save reports
-app.post("/report", async (req, res) => {
-  try {
-    const report = new Report(req.body);
-    await report.save();
-    res.status(200).json({ message: "Report saved successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error saving report" });
-  }
-});
+      if (res.ok) {
+        toast({
+          title: "✅ Report Submitted",
+          description:
+            "Thank you for your courage. Your report has been submitted securely.",
+        });
 
-// 🌐 Start server
-const PORT = 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+        // Clear inputs
+        (document.getElementById("incident-type") as HTMLInputElement).value = "";
+        (document.getElementById("date") as HTMLInputElement).value = "";
+        (document.getElementById("time") as HTMLInputElement).value = "";
+        (document.getElementById("location") as HTMLInputElement).value = "";
+        (document.getElementById("description") as HTMLTextAreaElement).value = "";
+        (document.getElementById("name") as HTMLInputElement).value = "";
+        (document.getElementById("phone") as HTMLInputElement).value = "";
+      } else {
+        toast({
+          title: "❌ Error",
+          description: "Failed to submit the report. Please try again later.",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "⚠️ Network Error",
+        description: "Could not connect to the server. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
+      <Header />
+      <div className="mt-20 w-full max-w-lg">
+        <Card>
+          <CardHeader>
+            <CardTitle>Report an Incident</CardTitle>
+            <CardDescription>
+              Your voice matters. All reports are treated with confidentiality.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="incident-type">Type of Incident</Label>
+                <Input
+                  id="incident-type"
+                  placeholder="e.g., Harassment, Unsafe Environment"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="date">Date of Incident</Label>
+                  <Input id="date" type="date" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="time">Time of Incident</Label>
+                  <Input id="time" type="time" required />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  placeholder="e.g., Street, City, or Online Platform"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Describe the incident in detail..."
+                  rows={5}
+                  required
+                />
+              </div>
+
+              <div className="space-y-4 pt-2 border-t">
+                <p className="text-sm text-muted-foreground">
+                  Provide your contact information for follow-up.
+                </p>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input id="name" placeholder="Your Name" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input id="phone" type="tel" placeholder="e.g., +91 9876543210" required />
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full bg-gradient-primary"
+                disabled={loading}
+              >
+                {loading ? "Submitting..." : "Submit Report"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default Report;

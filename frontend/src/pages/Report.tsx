@@ -2,18 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 
-
-
-
 const Report = () => {
   const { toast } = useToast();
-  const [isAnonymous, setIsAnonymous] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,13 +21,8 @@ const Report = () => {
       time: (document.getElementById("time") as HTMLInputElement)?.value,
       location: (document.getElementById("location") as HTMLInputElement)?.value,
       description: (document.getElementById("description") as HTMLTextAreaElement)?.value,
-      isAnonymous,
-      name: !isAnonymous
-        ? (document.getElementById("name") as HTMLInputElement)?.value
-        : "",
-      email: !isAnonymous
-        ? (document.getElementById("email") as HTMLInputElement)?.value
-        : "",
+      name: (document.getElementById("name") as HTMLInputElement)?.value,
+      phone: (document.getElementById("phone") as HTMLInputElement)?.value,
     };
 
     try {
@@ -49,16 +39,14 @@ const Report = () => {
             "Thank you for your courage. Your report has been submitted securely.",
         });
 
-        // Clear all inputs after successful submission
+        // Clear inputs
         (document.getElementById("incident-type") as HTMLInputElement).value = "";
         (document.getElementById("date") as HTMLInputElement).value = "";
         (document.getElementById("time") as HTMLInputElement).value = "";
         (document.getElementById("location") as HTMLInputElement).value = "";
         (document.getElementById("description") as HTMLTextAreaElement).value = "";
-        if (!isAnonymous) {
-          (document.getElementById("name") as HTMLInputElement).value = "";
-          (document.getElementById("email") as HTMLInputElement).value = "";
-        }
+        (document.getElementById("name") as HTMLInputElement).value = "";
+        (document.getElementById("phone") as HTMLInputElement).value = "";
       } else {
         toast({
           title: "❌ Error",
@@ -79,96 +67,80 @@ const Report = () => {
   return (
     <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
       <Header />
-      <br></br>
-      <br></br>
-      <br></br>
-      <br></br>
-      <Card className="w-full max-w-lg">
-        <br></br>
-        <br></br>
-        <CardHeader>
-          <CardTitle>Report an Incident</CardTitle>
-          <CardDescription>
-            Your voice matters. All reports are treated with confidentiality.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="incident-type">Type of Incident</Label>
-              <Input
-                id="incident-type"
-                placeholder="e.g., Harassment, Unsafe Environment"
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="mt-20 w-full max-w-lg">
+        <Card>
+          <CardHeader>
+            <CardTitle>Report an Incident</CardTitle>
+            <CardDescription>
+              Your voice matters. All reports are treated with confidentiality.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="date">Date of Incident</Label>
-                <Input id="date" type="date" required />
+                <Label htmlFor="incident-type">Type of Incident</Label>
+                <Input
+                  id="incident-type"
+                  placeholder="e.g., Harassment, Unsafe Environment"
+                  required
+                />
               </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="date">Date of Incident</Label>
+                  <Input id="date" type="date" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="time">Time of Incident</Label>
+                  <Input id="time" type="time" required />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="time">Time of Incident</Label>
-                <Input id="time" type="time" required />
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  placeholder="e.g., Street, City, or Online Platform"
+                  required
+                />
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                placeholder="e.g., Street, City, or Online Platform"
-                required
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Describe the incident in detail..."
+                  rows={5}
+                  required
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                placeholder="Describe the incident in detail..."
-                rows={5}
-                required
-              />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="anonymous"
-                checked={isAnonymous}
-                onCheckedChange={(checked) => setIsAnonymous(checked as boolean)}
-              />
-              <Label htmlFor="anonymous">Submit Anonymously</Label>
-            </div>
-
-            {!isAnonymous && (
               <div className="space-y-4 pt-2 border-t">
                 <p className="text-sm text-muted-foreground">
-                  Optional: Provide your contact information if you are willing
-                  to be contacted for follow-up.
+                  Provide your contact information for follow-up.
                 </p>
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
-                  <Input id="name" placeholder="Your Name" />
+                  <Input id="name" placeholder="Your Name" required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="your@email.com" />
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input id="phone" type="tel" placeholder="e.g., +91 9876543210" required />
                 </div>
               </div>
-            )}
 
-            <Button
-              type="submit"
-              className="w-full bg-gradient-primary"
-              disabled={loading}
-            >
-              {loading ? "Submitting..." : "Submit Report"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              <Button
+                type="submit"
+                className="w-full bg-gradient-primary"
+                disabled={loading}
+              >
+                {loading ? "Submitting..." : "Submit Report"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

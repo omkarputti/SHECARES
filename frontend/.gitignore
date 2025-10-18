@@ -24,3 +24,15 @@ tf_model/
 
 # Log files
 *.log
+
+# .gitignore
+node_modules/
+venv/
+*.zip
+*.tar
+*.tgz
+*.mp4
+*.mov
+*.iso
+.DS_Store
+.env

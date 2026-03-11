@@ -1,0 +1,41 @@
+
+# Dependencies and build output
+node_modules
+dist
+.vercel
+
+# Python specific
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Generated ML model files (not used by the web app)
+*.onnx
+*.tflite
+tf_model/
+*.csv
+
+# IDE and OS specific files
+.vscode/
+.idea/
+.DS_Store
+*.idx
+
+# Log files
+*.log
+
+# .gitignore
+node_modules/
+venv/
+env/
+.env
+.env.local
+*.zip
+*.tar
+*.tgz
+*.mp4
+*.mov
+*.iso
+.DS_Store
+davangere-a4f63-firebase-adminsdk-fbsvc-471080c973.json
